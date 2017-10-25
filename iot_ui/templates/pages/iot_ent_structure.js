@@ -7,18 +7,19 @@ $.ajaxSetup( {
         "Powered-By": "CodePlayer"
     }
 } );
+var company = "{{company}}";
 $(document.body).css({"overflow-y":"scroll" });
     var selectnode = "root";
     var memberopflag = 1;
 $(document).ready(function() {
     $('[data-rel=tooltip]').tooltip();
-    var company = "{{company}}";
+
     var memberurl = '';
 
     ///console.log(company);
 
     var memberurl = "/api/method/iot_ui.ui_api.list_company_member?company="+company;
-    var table = jQuery('#example').DataTable({
+    table = jQuery('#example').DataTable({
         "dom": 'lfrtp',
         //"bInfo" : false,
         //"pagingType": "full_numbers" ,
@@ -231,26 +232,18 @@ container1.find('.btn').addClass('btn-white btn-info btn-bold');
         $('#structure-list').addClass("hide");
         $('#add-group').addClass("hide");
         $('#member-list').addClass("hide");
-        $('#add-member').removeClass("hide");
-
-        $('#add-member-head').text("新增成员");
+        console.log(selectnode);
         memberopflag = 1
         if(selectnode=="root"){
-              $.get("/api/method/iot_ui.ui_api.list_possible_users?company="+company, function(r){
-                //$("div").html(result);
-                  console.log(r.message);
-                  users = r.message;
-                  $("#duallist").empty();
-                  for(n in users){
-                      var context = '<option value="'+users[n]+'">'+users[n]+'</option>';
-                      $('#duallist').append(context);
-                  }
-                    demo1.bootstrapDualListbox('refresh');
 
+            $('#add-newuser').removeClass("hide");
+            $('#add-newuser-head').text("新增用户");
 
-              });
         }
         else{
+        $('#add-member').removeClass("hide");
+        $('#add-member-head').text("新增用户");
+
               $.get("/api/method/iot_ui.ui_api.list_company_user?company="+company, function(r){
                 //$("div").html(result);
                   console.log(r.message);
@@ -323,6 +316,15 @@ container1.find('.btn').addClass('btn-white btn-info btn-bold');
         $('#structure-list').removeClass("hide");
         $('#member-list').removeClass("hide");
         $('#add-member').addClass("hide");
+        $('#add-newuser').addClass("hide");
+    } );
+
+    $('#add-newuser-close').click(function(){
+        $('#add-group').addClass("hide");
+        $('#structure-list').removeClass("hide");
+        $('#member-list').removeClass("hide");
+        $('#add-member').addClass("hide");
+        $('#add-newuser').addClass("hide");
     } );
 
     $.widget("ui.dialog", $.extend({}, $.ui.dialog.prototype, {
@@ -431,7 +433,7 @@ container1.find('.btn').addClass('btn-white btn-info btn-bold');
                 var url = "/api/method/iot_ui.ui_api.add_company_member";
             }
             else if(memberopflag==0){
-                var url = "/api/method/iot_ui.ui_api.del_company_member";
+                var url = "/api/method/iot_ui.ui_api.del_userfromcompany";
             }
 
         if(memberlists){
@@ -530,10 +532,11 @@ container1.find('.btn').addClass('btn-white btn-info btn-bold');
         var data = table.row($(this).parents('tr')).data();
         //var data = table.row( this ).data();
         //var data = $('#example').DataTable().row($(this).parents('tr')).data();
+        var user =new Array(data.member_id);
         if(selectnode=="root"){
-            var url = "/api/method/iot_ui.ui_api.del_company_single_member";
+            var url = "/api/method/iot_ui.ui_api.del_userfromcompany";
             var mmm = {
-                "member": data.member_id,
+                "members": user,
                 "company": company
 	        };
             $.ajax({
@@ -584,4 +587,6 @@ container1.find('.btn').addClass('btn-white btn-info btn-bold');
 
         }
     } );
+
+
 });

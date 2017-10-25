@@ -6,7 +6,7 @@ import frappe
 import json
 import uuid
 from frappe import _dict, throw, _
-
+from frappe.desk.form.save import savedocs
 from iot.iot.doctype.iot_device.iot_device import IOTDevice
 from cloud.cloud.doctype.cloud_company_group.cloud_company_group import list_user_groups as _list_user_groups
 from cloud.cloud.doctype.cloud_company.cloud_company import list_user_companies
@@ -36,8 +36,6 @@ def get_all(user):
 		"last_login": last_login,
 		"last_ip": last_ip
 	})
-
-
 
 
 def get_bunch_codes(group, start=0, search=None):
@@ -621,3 +619,34 @@ def ping():
 			form_data = json.loads(form_data.data)
 		return form_data.get("text") or "No Text"
 	return 'pong'
+
+@frappe.whitelist()
+def add_newuser2company(doc, action, userid, company):
+	savedocs(doc, action)
+	if not frappe.get_value("Cloud Company", {"name": company, "admin": frappe.session.user}):
+		throw(_("You not the admin of company {0}").format(company))
+	if 'Company Admin' in frappe.get_roles(frappe.session.user):
+		doc = frappe.get_doc({"doctype": "Cloud Employee", "user": userid, "company": company})
+		doc.insert(ignore_permissions=True)
+
+@frappe.whitelist()
+def del_userfromcompany():
+	postdata = get_post_json_data()
+	print(postdata)
+	company = postdata.company
+	members = postdata.members
+	print(members, type(members))
+	if 'Company Admin' in frappe.get_roles(frappe.session.user):
+		if not frappe.get_value("Cloud Company", {"name": company, "admin": frappe.session.user}):
+			return "You not the admin of company"
+		else:
+			deleted_user = []
+			remained_users = []
+			for m in members:
+				try:
+					frappe.delete_doc("Cloud Employee", m, ignore_permissions=True)
+					frappe.delete_doc("User", m)
+					deleted_user.append(m)
+				except Exception as ex:
+					remained_users.append(m)
+			return {"deleted": deleted_user, "remained": remained_users, "result": 'sucessful'}
