@@ -35,6 +35,7 @@ def get_context(context):
 	if frappe.session.user == 'Guest':
 		frappe.local.flags.redirect_location = "/login"
 		raise frappe.Redirect
+
 	context.no_cache = 1
 	context.show_sidebar = True
 	context.no_cache = 1
@@ -54,6 +55,9 @@ def get_context(context):
 
 	if 'Company Admin' in frappe.get_roles(frappe.session.user):
 		context.isCompanyAdmin = True
+	else:
+		frappe.local.flags.redirect_location = "/"
+		raise frappe.Redirect
 	menulist = frappe.get_all("Iot Menu")
 	n_list = []
 	for m in menulist:
