@@ -441,18 +441,26 @@ def list_company_group(company):
 @frappe.whitelist()
 def add_company_group():
 	group = get_post_json_data()
+	# print("@@@@@@@@@@@@", group)
 	group.update({"doctype": "Cloud Company Group"})
 	g = frappe.get_doc(group).insert()
-	# gg = frappe.get_doc("Cloud Company Group", group)
-	# print("newgroup", gg)
+	# grule = {"group":group.group_name, "error_type":"E", "level":"0"}
+	# grule.update({"doctype": "IOT Device Error Rule"})
+	# gr = frappe.get_doc(grule).insert()
 	nameobj = frappe.get_value("Cloud Employee", frappe.session.user, "company")
 	company = frappe.get_doc('Cloud Company', nameobj).name
 	groupnames = [d[0] for d in frappe.db.get_values("Cloud Company Group", {"company": company})]
+	# print("!!!!!!!!!", groupnames)
 	groups = []
 	for g in groupnames:
 		gg = frappe.get_doc("Cloud Company Group", g)
-		#print(gg.group_name.encode('utf-8'))
+		# print(gg.group_name.encode('utf-8'))
 		groups.append({"group_name": gg.group_name, "name": gg.name})
+
+	gid = frappe.get_value("Cloud Company Group", {"group_name": group.group_name})
+	# print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",gid)
+	group_rule_doc = frappe.get_doc({"doctype": "IOT Device Error Rule", "group":gid, "error_type":"E", "level":"0"})
+	group_rule_doc.insert(ignore_permissions=True)
 	return {"result": "sucessful", "groups": groups}
 
 @frappe.whitelist()
@@ -465,6 +473,16 @@ def mod_company_group():
 
 @frappe.whitelist()
 def del_company_group(groupid):
+	while True:
+		gruleid = frappe.get_value("IOT Device Error Rule", {"group": groupid})
+		print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@", gruleid)
+		if gruleid:
+			try:
+				frappe.delete_doc("IOT Device Error Rule", gruleid)
+			except Exception as ex:
+				return {"result": False, "reason": ex.message}
+		else:
+			break
 	try:
 		frappe.delete_doc("Cloud Company Group", groupid)
 		return True
