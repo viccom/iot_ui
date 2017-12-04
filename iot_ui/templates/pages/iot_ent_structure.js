@@ -552,7 +552,7 @@ container1.find('.btn').addClass('btn-white btn-info btn-bold');
                             table.ajax.url(memberurl).load();
                             $.gritter.add({
                                 title: '删除成员失败',
-                                text: r.message.remained,"成员被引用！",
+                                text: r.message.remained+"成员被引用！",
                                 class_name: 'gritter-error gritter-light'
 					            });
                         }
