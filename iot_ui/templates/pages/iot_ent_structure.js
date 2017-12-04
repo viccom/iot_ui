@@ -547,7 +547,19 @@ container1.find('.btn').addClass('btn-white btn-info btn-bold');
                 dataType: "json",
                 success: function(r) {
                     if(r.message.result == "sucessful" ){
-                        table.ajax.url(memberurl).load();
+                        console.log(r.message.deleted);
+                        if(r.message.remained){
+                            table.ajax.url(memberurl).load();
+                            $.gritter.add({
+                                title: '删除成员失败',
+                                text: r.message.remained,"成员被引用！",
+                                class_name: 'gritter-error gritter-light'
+					            });
+                        }
+                        else
+                        {
+                            table.ajax.url(memberurl).load();
+                        }
                      }
                      else{
                         $.gritter.add({
