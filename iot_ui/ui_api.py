@@ -650,9 +650,8 @@ def add_newuser2company(doc, action, userid, company):
 @frappe.whitelist()
 def del_userfromcompany():
 	postdata = get_post_json_data()
-	print(postdata)
-	company = postdata.company
-	members = postdata.members
+	company = postdata['company']
+	members = postdata['members']
 	print(members, type(members))
 	if 'Company Admin' in frappe.get_roles(frappe.session.user):
 		if not frappe.get_value("Cloud Company", {"name": company, "admin": frappe.session.user}):
