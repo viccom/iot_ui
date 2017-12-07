@@ -459,7 +459,7 @@ def add_company_group():
 
 	gid = frappe.get_value("Cloud Company Group", {"group_name": group.group_name})
 	# print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@",gid)
-	group_rule_doc = frappe.get_doc({"doctype": "IOT Device Error Rule", "group":gid, "error_type":"E", "level":"0"})
+	group_rule_doc = frappe.get_doc({"doctype": "IOT Device Error Rule", "group":gid, "error_type":"E", "level":0})
 	group_rule_doc.insert(ignore_permissions=True)
 	return {"result": "sucessful", "groups": groups}
 
