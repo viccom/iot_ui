@@ -120,4 +120,5 @@ app_license = "MIT"
 # }
 website_route_rules = [
 	{"from_route": "/iot_devinfo/<path:name>", "to_route": "iot_devinfo"},
+	{"from_route": "/weui_rtdata/<path:name>", "to_route": "weui_rtdata"},
 ]
