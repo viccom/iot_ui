@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=0">
-    <title>我的设备</title>
+    <title>我的配电室</title>
     <link rel="stylesheet" href="/assets/iot_ui/assets/css/weui.min.css">
     <link rel="stylesheet" href="/assets/iot_ui/assets/css/jquery-weui.min.css">
     <link rel="stylesheet" href="/assets/iot_ui/assets/css/iconfont.css">
@@ -83,7 +83,7 @@ footer a {
 
 
 
-        <h2 class="demos-second-title">我的设备</h2>
+        <h2 class="demos-second-title">我的配电室</h2>
 
 
 
@@ -159,7 +159,7 @@ footer a {
 </script>
 <script>
 var userdevices=[];
-var count_perpage=5;
+var count_perpage=10;
 var current_page=1;
 var total_pages=1;
     $.get("/api/method/iot_ui.ui_api.devices_list_array?filter=all", function (r) {
