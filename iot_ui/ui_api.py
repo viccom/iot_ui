@@ -56,9 +56,10 @@ def get_post_json_data():
 	ctype = frappe.get_request_header("Content-Type")
 	if "json" not in ctype.lower():
 		throw(_("Incorrect HTTP Content-Type found {0}").format(ctype))
-	if not frappe.form_dict.data:
+	data = frappe.request.get_data()
+	if not data:
 		throw(_("JSON Data not found!"))
-	return frappe._dict(json.loads(frappe.form_dict.data))
+	return json.loads(data)
 
 @frappe.whitelist()
 def devices_list_array(filter=None):
@@ -736,3 +737,19 @@ def iot_device_cfg(sn=None, vsn=None):
 		return json.loads(client.get(vsn or sn))
 	else:
 		return None
+
+@frappe.whitelist()
+def unbind_wechat_user():
+	postdata = get_post_json_data()
+	openid = postdata['openid']
+	print("@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@", openid)
+	wechatid = frappe.db.get_value("Wechat Binding", {"openid": openid})
+	if wechatid:
+		try:
+			frappe.delete_doc("Wechat Binding", wechatid, ignore_permissions=True)
+			frappe.db.commit()
+			return True
+		except Exception as ex:
+			return False
+	else:
+		return False
