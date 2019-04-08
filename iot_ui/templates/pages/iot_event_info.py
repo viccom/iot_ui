@@ -10,7 +10,7 @@ from iot.iot.doctype.iot_device.iot_device import IOTDevice
 from cloud.cloud.doctype.cloud_company_group.cloud_company_group import list_user_groups as _list_user_groups
 from cloud.cloud.doctype.cloud_company.cloud_company import list_user_companies
 from iot.hdb_api import list_iot_devices
-
+from iot.iot.doctype.iot_device.iot_device import IOTDevice
 
 def get_context(context):
 	eventid = frappe.form_dict.eventid
@@ -24,8 +24,15 @@ def get_context(context):
 	context.eventid = eventid
 	event = frappe.get_doc("IOT Device Error", eventid)
 	# print(event.error_info)
-	context.device = event.device
-	context.error_type = event.error_type
+	devname = event.device
+	devinfo = IOTDevice.get_device_doc(event.device)
+	if devinfo:
+		devname = devinfo.dev_name
+	context.device = devname + "_" + event.error_key
+
+	error_type = frappe.get_value("IOT Error Type", event.error_type, "description")
+
+	context.error_type = error_type
 	context.error_key = event.error_key
 	context.error_level = event.error_level
 	context.error_info = event.error_info
